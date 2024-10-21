@@ -1,0 +1,41 @@
+# 第一阶段：构建阶段
+FROM golang:1.19 AS builder
+# 设置环境变量
+ENV GOPROXY https://goproxy.cn,direct
+ENV GO11MODULE on
+# 设置工作目录
+RUN mkdir -p /app
+WORKDIR /app
+# 拷贝源码
+COPY . /app
+# 下载依赖
+RUN go mod tidy
+# 编译应用
+RUN go build -o mhxy_helper ./gin_cmd/main.go
+
+# 第二阶段：运行阶段
+FROM alpine:latest
+# 设置工作目录
+RUN mkdir -p /root
+WORKDIR /root/
+# 从构建阶段复制二进制文件
+COPY --from=builder /app/mhxy_helper .
+# 复制DB
+COPY --from=builder /app/mhxyhelper.db .
+COPY --from=builder /app/mhxyhelper.db-shm .
+COPY --from=builder /app/mhxyhelper.db-wal .
+
+# 设置时区
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo 'Asia/Shanghai' > /etc/timezone
+RUN apk add --no-cache tzdata
+ENV TZ=Asia/Shanghai
+
+# 设置编码
+ENV LANG C.UTF-8
+
+# 暴露端口
+EXPOSE 8080
+
+# 启动应用
+CMD ["./mhxy_helper"]
