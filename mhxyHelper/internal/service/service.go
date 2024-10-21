@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/internal/database"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/pkg/common"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/pkg/utils"
+	"mhxyHelper/internal/database"
+	"mhxyHelper/pkg/common"
+	"mhxyHelper/pkg/utils"
 	"os"
 	"strings"
 )

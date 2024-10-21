@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/internal/app"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/internal/service"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/pkg/errcode"
 	"github.com/gin-gonic/gin"
+	"mhxyHelper/internal/app"
+	"mhxyHelper/internal/service"
+	"mhxyHelper/pkg/errcode"
 	"net/http"
 )
 

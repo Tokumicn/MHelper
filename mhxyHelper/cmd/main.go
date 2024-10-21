@@ -3,10 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/internal/database"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/internal/service"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/pkg/logger"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/pkg/utils"
+	"mhxyHelper/internal/database"
+	"mhxyHelper/internal/service"
+	"mhxyHelper/pkg/logger"
+	"mhxyHelper/pkg/utils"
 	"os"
 )
 

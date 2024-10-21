@@ -3,8 +3,8 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/internal/database"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/pkg/logger"
+	"mhxyHelper/internal/database"
+	"mhxyHelper/pkg/logger"
 	"os"
 	"regexp"
 	"strconv"

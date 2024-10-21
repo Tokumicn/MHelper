@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/internal/database"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/internal/handler"
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/pkg/logger"
 	"github.com/gin-gonic/gin"
+	"mhxyHelper/internal/database"
+	"mhxyHelper/internal/handler"
+	"mhxyHelper/pkg/logger"
 )
 
 func main() {

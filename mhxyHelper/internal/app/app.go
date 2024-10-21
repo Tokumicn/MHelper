@@ -3,8 +3,8 @@ package app
 import (
 	"net/http"
 
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/pkg/errcode"
 	"github.com/gin-gonic/gin"
+	"mhxyHelper/pkg/errcode"
 )
 
 type Response struct {
