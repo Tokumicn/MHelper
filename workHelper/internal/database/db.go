@@ -51,9 +51,9 @@ type User struct {
 // 初始化数据库连接
 func InitDB() (*gorm.DB, error) {
 	dir, _ := os.Getwd()
-	fmt.Println("[MHXYDB] work dir: ", dir)
+	fmt.Println("[WorkDB] work dir: ", dir)
 
-	db, err := gorm.Open(sqlite.Open("./mhxyhelper.db"), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open("./workhelper.db"), &gorm.Config{
 		//// 开启 WAL 模式
 		//DSN: "mode=wal",
 		//// 增加最大连接数为 100
@@ -139,15 +139,8 @@ func InitDBWithAutoMigrate(needAutoMigrate bool) (*gorm.DB, error) {
 
 	if needAutoMigrate {
 
-		// 物品信息表
-		db.AutoMigrate(Stuff{})
-		if err != nil {
-			log.Fatal(err)
-			return nil, err
-		}
-
-		// 物品更新日志
-		db.AutoMigrate(StuffLog{})
+		// 帮助信息表
+		db.AutoMigrate(Helper{})
 		if err != nil {
 			log.Fatal(err)
 			return nil, err

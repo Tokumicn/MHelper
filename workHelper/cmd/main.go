@@ -19,7 +19,7 @@ func main() {
 	}
 
 	// 初始化表结构
-	// db.InitDBWithAutoMigrate(true) // 初始化协助构建表结构
+	// database.InitDBWithAutoMigrate(true) // 初始化协助构建表结构
 
 	// 写入测试 测试根据csv文件构建数据并存储
 	//err := service.BuildStuffByStr([]string{})
@@ -40,7 +40,7 @@ func main() {
 		}
 
 		// 查询测试
-		total, stuffs, err := service.QueryStuff(inputStr)
+		total, stuffs, err := service.QueryQuestion(inputStr)
 		if err != nil {
 			fmt.Println("err: ", err.Error())
 			return
