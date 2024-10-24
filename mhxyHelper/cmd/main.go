@@ -19,7 +19,7 @@ func main() {
 	}
 
 	// 初始化表结构
-	//database.InitDBWithAutoMigrate(true) // 初始化协助构建表结构
+	// database.InitDBWithAutoMigrate(true) // 初始化协助构建表结构
 	// DictBuildToolV1() // 构建字典信息
 
 	// 写入测试 测试根据csv文件构建数据并存储

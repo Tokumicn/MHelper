@@ -36,5 +36,12 @@ func main() {
 	// 属性查询
 	attrRouter.POST("/query", handler.QueryAttribute)
 
+	// 账本相关接口
+	accountRouter := r.Group("/account")
+	// 账单构建
+	accountRouter.POST("/build", handler.BuildAccount)
+	// 查询账单
+	accountRouter.POST("/query", handler.QueryAccount)
+
 	r.Run(":8080") // listen and serve on 0.0.0.0:8080
 }

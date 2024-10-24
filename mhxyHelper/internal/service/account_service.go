@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"mhxyHelper/internal/database"
 	"mhxyHelper/internal/utils"
+	"mhxyHelper/pkg/common"
 	"mhxyHelper/pkg/logger"
 	"strings"
 )
@@ -28,6 +30,11 @@ func BuildAccountInfo(accountArr []string) error {
 			logger.Log.ErrorContext(ctx, "buildVal [temp: %v] err: %v \n", temp, err)
 			continue
 		}
+
+		if temp.UserId <= 0 || len(temp.StuffName) <= 0 {
+			continue // 如果没有必要信息则不处理
+		}
+
 		accounts = append(accounts, temp)
 	}
 
@@ -42,6 +49,8 @@ func BuildAccountInfo(accountArr []string) error {
 }
 
 // 将字符串转换为对象
+// [userId, stuffName, buyMH, buyRM, sellMH, sellRM, region, regionName]
+// 1,100灵饰指南,70,0,0,0,,
 func str2Account(acStr string) (database.Account, error) {
 
 	var (
@@ -155,4 +164,28 @@ func saveAccounts(ctx context.Context, list []database.Account) error {
 	}
 
 	return nil
+}
+
+// 查询账单信息
+func QueryUserAccountInfo(queryStr string, userId int64) (int64, []database.Account, error) {
+	var (
+		ctx      = context.Background()
+		qAccount database.Account
+		offset   int
+		limit    = 50
+	)
+
+	if userId > 0 {
+		qAccount.UserId = userId
+	} else {
+		// 通过关键词查询userId
+		userid, ok := common.QueryAccountMap[queryStr]
+		if ok {
+			qAccount.UserId = userid
+		} else {
+			return 0, nil, fmt.Errorf("查询不到账户信息呀~")
+		}
+	}
+
+	return qAccount.List(ctx, offset, limit)
 }

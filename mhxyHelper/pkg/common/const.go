@@ -1,6 +1,15 @@
 package common
 
 var (
+	// 账号查询映射
+	QueryAccountMap = map[string]int64{
+		"175化生寺": 1,
+		"175大唐":  2,
+		"175五庄观": 3,
+	}
+)
+
+var (
 	QueryQNameMapAttribute = map[string]string{
 		"武器": "武器",
 		"衣服": "衣服",
