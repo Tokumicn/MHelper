@@ -1,9 +1,9 @@
-package utils
+package database
 
 import (
-	"github.com/Tokumicn/theBookofChangesEveryDay/mhxyHelper/pkg/logger"
 	"io"
 	"log"
+	"mhxyHelper/pkg/logger"
 	"strings"
 )
 
@@ -46,7 +46,7 @@ func readCutSetsFromFile() []string {
 	res := make([]string, 0)
 
 	// 读取 ignore.txt 文件
-	cutStrF, err := readCurrentDirFile(cutStrFileName)
+	cutStrF, err := ReadCurrentDirFile(cutStrFileName)
 	defer cutStrF.Close() // 确保在函数结束时关闭文件
 	if err != nil {
 		log.Printf("[ERROR] readCurrentDirFile [%s] err: %v", dictFileName)

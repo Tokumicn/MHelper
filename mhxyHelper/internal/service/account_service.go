@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"mhxyHelper/internal/database"
+	"mhxyHelper/internal/utils"
 	"mhxyHelper/pkg/logger"
-	"mhxyHelper/pkg/utils"
 	"strings"
 )
 
@@ -61,7 +61,7 @@ func str2Account(acStr string) (database.Account, error) {
 
 	// 必填字段  没有则报错
 	userIdStr, err = utils.ArrGetWithCheck(splits, 0)
-	userId, err := utils.ConvertStr2Int(userIdStr)
+	userId, err := database.ConvertStr2Int(userIdStr)
 	if err != nil {
 		return empty, err
 	}
@@ -74,34 +74,34 @@ func str2Account(acStr string) (database.Account, error) {
 
 	// 非必填字段
 	buyMHStr, _ := utils.ArrGetWithCheck(splits, 2)
-	buyValMH, err = utils.ConvertStr2Float32(buyMHStr)
+	buyValMH, err = database.ConvertStr2Float32(buyMHStr)
 	if err != nil {
 		return empty, err
 	}
 
 	// 非必填字段
 	buyRMStr, _ := utils.ArrGetWithCheck(splits, 3)
-	buyValRM, err = utils.ConvertStr2Float32(buyRMStr)
+	buyValRM, err = database.ConvertStr2Float32(buyRMStr)
 	if err != nil {
 		return empty, err
 	}
 
 	// 非必填字段
 	sellMHStr, _ := utils.ArrGetWithCheck(splits, 4)
-	sellValMH, err = utils.ConvertStr2Float32(sellMHStr)
+	sellValMH, err = database.ConvertStr2Float32(sellMHStr)
 	if err != nil {
 		return empty, err
 	}
 
 	// 非必填字段
 	sellRMStr, _ := utils.ArrGetWithCheck(splits, 5)
-	sellValRM, err = utils.ConvertStr2Float32(sellRMStr)
+	sellValRM, err = database.ConvertStr2Float32(sellRMStr)
 	if err != nil {
 		return empty, err
 	}
 
 	regionStr, _ := utils.ArrGetWithCheck(splits, 5)
-	region, err = utils.ConvertStr2Int(regionStr)
+	region, err = database.ConvertStr2Int(regionStr)
 	if err != nil {
 		return empty, err
 	}

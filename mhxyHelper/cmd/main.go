@@ -6,7 +6,6 @@ import (
 	"mhxyHelper/internal/database"
 	"mhxyHelper/internal/service"
 	"mhxyHelper/pkg/logger"
-	"mhxyHelper/pkg/utils"
 	"os"
 )
 
@@ -20,13 +19,20 @@ func main() {
 	}
 
 	// 初始化表结构
-	// db.InitDBWithAutoMigrate(true) // 初始化协助构建表结构
+	//database.InitDBWithAutoMigrate(true) // 初始化协助构建表结构
 	// DictBuildToolV1() // 构建字典信息
 
 	// 写入测试 测试根据csv文件构建数据并存储
 	//err := service.BuildStuffByStr([]string{})
 	//if err != nil {
 	//	fmt.Println("err: ", err.Error())
+	//}
+
+	// 写入测试  测试根据excel文件构建属性数据并存储
+	//err = service.BuildAttributeByStr([]string{})
+	//if err != nil {
+	//	logger.Log.Error("BuildAttributeByStr err: %v", err)
+	//	return
 	//}
 
 	for {
@@ -42,34 +48,53 @@ func main() {
 		}
 
 		// 查询测试
-		total, stuffs, err := service.QueryStuff(inputStr)
+		total, typeStr, data, err := service.Query(inputStr)
 		if err != nil {
 			fmt.Println("err: ", err.Error())
 			return
 		}
 
-		fmt.Println("\n查询结果: ")
-		fmt.Println("=====================================")
-		fmt.Println("total: ", total)
-
-		for _, st := range stuffs {
-			fmt.Println(st.ToString())
-		}
-		fmt.Println("=====================================")
+		printQueryResult(total, typeStr, data)
 	}
 
 }
 
+func printQueryResult(total int64, typeStr string, data interface{}) {
+
+	fmt.Println("\n查询结果: ")
+	fmt.Println("=====================================")
+	fmt.Println("total: ", total)
+
+	switch typeStr {
+	case service.TypeAttribute:
+		attributes := data.([]database.Attribute)
+		for _, at := range attributes {
+			fmt.Println(at.ToString())
+			fmt.Println("")
+		}
+	case service.TypeStuff:
+		stuffs := data.([]database.Stuff)
+		for _, st := range stuffs {
+			fmt.Println(st.ToString())
+			fmt.Println("")
+		}
+	default:
+		fmt.Println("没查到.")
+	}
+
+	fmt.Println("=====================================")
+}
+
 func DictBuildToolV1() {
 	// 初始化数据清理字典
-	utils.InitCutSets()
+	database.InitCutSets()
 
 	// 备份dict.txt
-	utils.DictBackup()
+	database.DictBackup()
 
 	// 接收多行输入  回车结束
 	inputArr := scanInputText()
-	tempDict, tempProducts := utils.BuildDict(inputArr)
+	tempDict, tempProducts := database.BuildDict(inputArr)
 
 	logger.Log.Info("============================")
 	for _, v := range tempProducts {
@@ -77,7 +102,7 @@ func DictBuildToolV1() {
 	}
 	logger.Log.Info("============================")
 
-	utils.SaveDict2Txt(tempDict)
+	database.SaveDict2Txt(tempDict)
 }
 
 // 按行接收输入的多行数据 直到回车结束

@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"mhxyHelper/pkg/utils"
+	"mhxyHelper/internal/utils"
 )
 
 func buildVal(valMH, valRM float32) (float32, float32) {

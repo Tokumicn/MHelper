@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"log"
 	"os"
 	"time"
 )
@@ -146,26 +145,32 @@ func InitDBWithAutoMigrate(needAutoMigrate bool) (*gorm.DB, error) {
 		//}
 
 		// 物品信息表
-		db.AutoMigrate(Stuff{})
-		if err != nil {
-			log.Fatal(err)
-			return nil, err
-		}
+		//db.AutoMigrate(Stuff{})
+		//if err != nil {
+		//	log.Fatal(err)
+		//	return nil, err
+		//}
 
 		// 物品更新日志
-		db.AutoMigrate(StuffLog{})
-		if err != nil {
-			log.Fatal(err)
-			return nil, err
-		}
+		//db.AutoMigrate(StuffLog{})
+		//if err != nil {
+		//	log.Fatal(err)
+		//	return nil, err
+		//}
 
 		// 用户账单信息表
-		db.AutoMigrate(Account{})
-		if err != nil {
-			log.Fatal(err)
-			return nil, err
-		}
+		//db.AutoMigrate(Account{})
+		//if err != nil {
+		//	log.Fatal(err)
+		//	return nil, err
+		//}
 
+		// 属性信息表
+		//db.AutoMigrate(Attribute{})
+		//if err != nil {
+		//	log.Fatal(err)
+		//	return nil, err
+		//}
 	}
 
 	return db, nil

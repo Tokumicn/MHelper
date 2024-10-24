@@ -1,14 +1,12 @@
 package service
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"mhxyHelper/internal/database"
+	utils2 "mhxyHelper/internal/utils"
 	"mhxyHelper/pkg/common"
 	"mhxyHelper/pkg/logger"
-	"mhxyHelper/pkg/utils"
-	"os"
 	"strings"
 )
 
@@ -37,12 +35,12 @@ func QueryStuff(inStr string) (int64, []database.Stuff, error) {
 func buildQuery(inStr string) (database.Stuff, error) {
 	res := database.Stuff{}
 
-	qNameStr, ok := common.QueryQNameMap[inStr]
+	qNameStr, ok := common.QueryQNameMapStuff[inStr]
 	if ok {
 		res.QName = qNameStr
 	}
 
-	nameStr, ok := common.QueryNameMap[inStr]
+	nameStr, ok := common.QueryNameMapStuff[inStr]
 	if ok {
 		res.Name = nameStr
 	}
@@ -61,13 +59,13 @@ func BuildStuffByStr(stuffArr []string) error {
 
 	stuffs := make([]database.Stuff, len(stuffArr))
 
-	// 读取本地文件增加到本次处理商品信息中
-	tempStuffs, err := readCSVFromStuffData()
-	if err != nil {
-		logger.Log.ErrorContext(ctx, "BuildStuffByStr-readCSVFromStuffData err: %v\n", err)
-		return err
-	}
-	stuffArr = append(stuffArr, tempStuffs...)
+	// 读取本地文件增加到本次处理商品信息中 PS: 初始化时使用
+	//tempStuffs, err := excel.ReadCSVFromStuffData()
+	//if err != nil {
+	//	logger.Log.ErrorContext(ctx, "BuildStuffByStr-readCSVFromStuffData err: %v\n", err)
+	//	return err
+	//}
+	//stuffArr = append(stuffArr, tempStuffs...)
 
 	for _, stuf := range stuffArr {
 
@@ -84,34 +82,13 @@ func BuildStuffByStr(stuffArr []string) error {
 	}
 
 	// 存储数据
-	err = saveStuffs(ctx, stuffs)
+	err := saveStuffs(ctx, stuffs)
 	if err != nil {
 		logger.Log.ErrorContext(ctx, "saveStuffs err: %v", err.Error())
 		return err
 	}
 
 	return nil
-}
-
-// 从stuff数据文件中读取数据
-func readCSVFromStuffData() ([]string, error) {
-	res := make([]string, 0)
-	f, err := os.Open("/Users/zhangrui/Workspace/goSpace/src/Tokumicn/theBookofChangesEveryDay/mhxyHelper/config/stuff_data.csv")
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	r := bufio.NewReader(f)
-	r.ReadLine() // 丢弃第一行
-	for {
-		line, _, err := r.ReadLine()
-		if err != nil {
-			break
-		}
-		res = append(res, string(line))
-	}
-	return res, nil
 }
 
 // 将字符串转换为对象
@@ -131,39 +108,39 @@ func str2Stuff(stuf string) (database.Stuff, error) {
 	splits := strings.Split(stuf, ",")
 
 	// 必填字段  没有则报错
-	qName, err = utils.ArrGetWithCheck(splits, 0)
+	qName, err = utils2.ArrGetWithCheck(splits, 0)
 	if err != nil {
 		return empty, err
 	}
 
 	// 必填字段  没有则报错
-	name, err = utils.ArrGetWithCheck(splits, 1)
+	name, err = utils2.ArrGetWithCheck(splits, 1)
 	if err != nil {
 		return empty, err
 	}
 
 	// 非必填字段
-	vMHStr, _ := utils.ArrGetWithCheck(splits, 2)
-	vMH, err = utils.ConvertStr2Float32(vMHStr)
+	vMHStr, _ := utils2.ArrGetWithCheck(splits, 2)
+	vMH, err = database.ConvertStr2Float32(vMHStr)
 	if err != nil {
 		return empty, err
 	}
 
 	// 非必填字段
-	vRMStr, _ := utils.ArrGetWithCheck(splits, 3)
-	vRM, err = utils.ConvertStr2Float32(vRMStr)
+	vRMStr, _ := utils2.ArrGetWithCheck(splits, 3)
+	vRM, err = database.ConvertStr2Float32(vRMStr)
 	if err != nil {
 		return empty, err
 	}
 
-	orderStr, _ := utils.ArrGetWithCheck(splits, 4)
-	order, err = utils.ConvertStr2Int(orderStr)
+	orderStr, _ := utils2.ArrGetWithCheck(splits, 4)
+	order, err = database.ConvertStr2Int(orderStr)
 	if err != nil {
 		return empty, err
 	}
 
-	regionStr, _ := utils.ArrGetWithCheck(splits, 5)
-	region, err = utils.ConvertStr2Int(regionStr)
+	regionStr, _ := utils2.ArrGetWithCheck(splits, 5)
+	region, err = database.ConvertStr2Int(regionStr)
 	if err != nil {
 		return empty, err
 	}
@@ -189,7 +166,7 @@ func buildStuffVal(s database.Stuff) (database.Stuff, error) {
 	}
 
 	if s.ValMH == 0 {
-		valMH, err := utils.RM2MH(s.ValRM)
+		valMH, err := utils2.RM2MH(s.ValRM)
 		if err != nil {
 			// TODO log
 			fmt.Printf("RM2MH[ValRM: %f] err: %v\n", s.ValRM, err)
@@ -199,7 +176,7 @@ func buildStuffVal(s database.Stuff) (database.Stuff, error) {
 	}
 
 	if s.ValRM == 0 {
-		valRM, err := utils.MH2RM(s.ValMH)
+		valRM, err := utils2.MH2RM(s.ValMH)
 		if err != nil {
 			// TODO log
 			fmt.Printf("MH2RM[ValMH: %f] err: %v\n", s.ValMH, err)

@@ -1,9 +1,8 @@
-package utils
+package database
 
 import (
 	"bufio"
 	"fmt"
-	"mhxyHelper/internal/database"
 	"mhxyHelper/pkg/logger"
 	"os"
 	"regexp"
@@ -12,11 +11,21 @@ import (
 	"time"
 )
 
-// 构建、备份 字典
+const (
+	cutStrFileName     = "./ignore.txt"
+	dictFileName       = "./dict.txt"
+	dictBackupFileName = "./dict_bak_%d.txt"
+)
 
+var (
+	ignoreTxtCutSets = make([]string, 0)
+	nameDictMap      = map[string]struct{}{}
+)
+
+// 构建、备份 字典
 func DictBackup() error {
 	// 读取dict文件
-	dictF, err := readCurrentDirFile(dictFileName)
+	dictF, err := ReadCurrentDirFile(dictFileName)
 	defer dictF.Close() // 确保在函数结束时关闭文件
 	if err != nil {
 		logger.Log.Error("[ERROR] DictBackup readCurrentDirFile [%s] err: %v \n", dictFileName, err)
@@ -86,16 +95,16 @@ func SaveDict2Txt(tempDict []string) {
 }
 
 // BuildDict 分词按行输出字典数据
-func BuildDict(textArr []string) ([]string, []database.StuffLog) {
+func BuildDict(textArr []string) ([]string, []StuffLog) {
 	dictResults := []string{}
-	pLogResults := []database.StuffLog{}
+	pLogResults := []StuffLog{}
 
-	tempLog := database.StuffLog{}
+	tempLog := StuffLog{}
 	// 按行处理识别的字符数据
 	for i, _ := range textArr {
 		if len(tempLog.Name) > 0 && tempLog.ValMH > 0 {
 			pLogResults = append(pLogResults, tempLog)
-			tempLog = database.StuffLog{} // 加入后就可以重置了
+			tempLog = StuffLog{} // 加入后就可以重置了
 		}
 
 		curText := textArr[i]
