@@ -51,7 +51,7 @@ func main() {
 		total, typeStr, data, err := service.Query(inputStr)
 		if err != nil {
 			fmt.Println("err: ", err.Error())
-			return
+			continue
 		}
 
 		printQueryResult(total, typeStr, data)

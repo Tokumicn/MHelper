@@ -26,7 +26,7 @@ type Stuff struct {
 }
 
 func (st Stuff) ToString() string {
-	return fmt.Sprintf("[qName: %s, name: %s, mhCoin: %.2f, rmCoin: %.2f, order: %d]",
+	return fmt.Sprintf("[qName: %s, name: %s, mhCoin: %.2fW, rmCoin: %.2f元, order: %d]",
 		st.QName, st.Name, st.ValMH, st.ValRM, st.Order)
 }
 
