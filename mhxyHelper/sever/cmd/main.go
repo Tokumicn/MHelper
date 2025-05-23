@@ -49,7 +49,7 @@ func main() {
 	//	return
 	//}
 
-	// 默认走本地查询
+	// 默认查询梦幻精灵
 	processFlag := processMHJL
 	for {
 		fmt.Println("帮助信息 [<命令: 直接输入问题 | Q | quit >:<空格> <问题>] [eg: Q: 160武器]") // <命令: Q LLM RAG quit>
@@ -134,6 +134,7 @@ func buildInput() (string, string) {
 
 func checkUserInput(cmdStr string) string {
 
+	// 问精灵
 	if len(cmdStr) <= 0 {
 		return processMHJL
 	}
@@ -145,9 +146,9 @@ func checkUserInput(cmdStr string) string {
 		return processExit
 	}
 
-	// 问精灵
+	// 查询本地
 	if hasPrefix4Map(cmdStr, []string{"q", "q:", "q: "}) {
-		return processMHJL
+		return processLOCAL
 	}
 
 	// 问知识库
@@ -160,7 +161,7 @@ func checkUserInput(cmdStr string) string {
 		return processLLM
 	}
 
-	return processLOCAL
+	return processMHJL
 }
 
 // 基于 Map 匹配前缀
