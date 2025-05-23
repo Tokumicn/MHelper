@@ -117,15 +117,18 @@ func buildInput() (string, string) {
 		cmdStr   string // 命令
 		inputStr string // 问题
 	)
-
+	rawInputStr = strings.TrimSpace(rawInputStr)
 	splitInput := strings.Split(rawInputStr, " ")
 	if len(splitInput) >= 2 {
 		cmdStr = splitInput[0]
 		inputStr = splitInput[1]
-	} else {
-		cmdStr = ""
+	}
+
+	if len(splitInput) == 1 {
+		cmdStr = rawInputStr
 		inputStr = rawInputStr
 	}
+
 	return cmdStr, inputStr
 }
 

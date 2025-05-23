@@ -10,8 +10,8 @@ copy_db:
 build:
 	GOOS=darwin GOARCH=amd64  # CGO_ENABLED=0
 	mkdir -p bin/
-	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_web ./gin_cmd/main.go
-	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_cmd ./cmd/main.go
+	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_web ./sever/gin_cmd/main.go
+	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_cmd ./sever/cmd/main.go
 	cp ./mhxyhelper.db ./bin
 	cp ./mhxyhelper.db-shm ./bin
 	cp ./mhxyhelper.db-wal ./bin
@@ -20,15 +20,15 @@ build:
 # build_linux
 build_linux:
 	GOOS=linux GOARCH=amd64 # CGO_ENABLED=0
-	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_web_linux ./gin_cmd/main.go
-	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_cmd_linux ./cmd/main.go
+	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_web_linux ./sever/gin_cmd/main.go
+	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_cmd_linux ./sever/cmd/main.go
 
 .PHONY: build_win
 # build_win
 build_win: # CGO_ENABLED=0
 	GOOS=windows GOARCH=amd64
-	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_web.exe ./gin_cmd/main.go
-	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_cmd.exe ./cmd/main.go
+	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_web.exe ./sever/gin_cmd/main.go
+	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_cmd.exe ./sever/cmd/main.go
 
 .PHONY: docker_build
 # docker_build
