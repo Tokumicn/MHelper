@@ -1,4 +1,4 @@
-package common
+package const_val
 
 var (
 	// 账号查询映射

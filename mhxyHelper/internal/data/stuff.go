@@ -1,18 +1,11 @@
-package database
+package data
 
 import (
 	"context"
 	"fmt"
 	"gorm.io/gorm"
-	"time"
+	"mhxyHelper/pkg/database"
 )
-
-type Model struct {
-	ID        uint           `gorm:"primarykey" json:"id"`
-	CreatedAt time.Time      `json:"-"`
-	UpdatedAt time.Time      `json:"-"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
-}
 
 // 物品信息 无特殊属性的通用物品 如：宝石、兽决、灵饰指南、书铁、珍珠 等
 type Stuff struct {
@@ -61,7 +54,7 @@ func (pVal Stuff) ExistByQName(ctx context.Context) (bool, uint, error) {
 // 查询单个物品信息  name字段为全表唯一索引
 func (pVal Stuff) FindByName(ctx context.Context) (Stuff, error) {
 	res := Stuff{}
-	if err := LocalDB().
+	if err := database.LocalDB().
 		WithContext(ctx).
 		Model(Stuff{}).
 		Where("name = ?", pVal.Name).
@@ -77,7 +70,7 @@ func (pVal Stuff) FindByName(ctx context.Context) (Stuff, error) {
 
 // 创建商品价格信息
 func (pVal Stuff) Create(ctx context.Context) (uint, error) {
-	if err := LocalDB().
+	if err := database.LocalDB().
 		WithContext(ctx).
 		Create(&pVal).Error; err != nil {
 		return 0, fmt.Errorf("create stuff info err: %v", err)
@@ -98,7 +91,7 @@ func (pVal Stuff) Update(ctx context.Context) (uint, error) {
 		updateMap["val_rm"] = pVal.ValRM
 	}
 
-	if err := LocalDB().WithContext(ctx).
+	if err := database.LocalDB().WithContext(ctx).
 		Model(Stuff{}).
 		Where("id = ?", pVal.ID).
 		Error; err != nil {
@@ -109,7 +102,7 @@ func (pVal Stuff) Update(ctx context.Context) (uint, error) {
 
 // 获取列表 目前仅提供通过名称查询
 func (pVal Stuff) List(ctx context.Context, offset, limit int) (int64, []Stuff, error) {
-	DB := LocalDB()
+	DB := database.LocalDB()
 	vals := make([]Stuff, 0)
 	var total int64
 	DB = DB.WithContext(ctx).
@@ -145,7 +138,7 @@ func (pVal Stuff) List(ctx context.Context, offset, limit int) (int64, []Stuff, 
 }
 
 func (pVal Stuff) CreateStuffLog(ctx context.Context) (uint, error) {
-	if err := LocalDB().WithContext(ctx).
+	if err := database.LocalDB().WithContext(ctx).
 		Table("stuff_log").
 		Create(&pVal).
 		Error; err != nil {

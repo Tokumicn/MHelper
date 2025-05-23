@@ -1,20 +1,20 @@
-package service
+package local_query
 
 import (
 	"context"
 	"fmt"
-	"mhxyHelper/internal/database"
-	utils2 "mhxyHelper/internal/utils"
-	"mhxyHelper/pkg/common"
+	"mhxyHelper/internal/data"
+	"mhxyHelper/internal/data/const_val"
 	"mhxyHelper/pkg/logger"
+	"mhxyHelper/pkg/utils"
 	"strings"
 )
 
 // 查询商品信息
-func QueryStuff(inStr string) (int64, []database.Stuff, error) {
+func QueryStuff(inStr string) (int64, []data.Stuff, error) {
 	var (
 		ctx    = context.Background()
-		qStuff database.Stuff
+		qStuff data.Stuff
 		err    error
 		offset int
 		limit  = 50
@@ -32,15 +32,15 @@ func QueryStuff(inStr string) (int64, []database.Stuff, error) {
 }
 
 // 根据输入字符串构建更为精准的查询条件  数据量不大该过程可以通过map映射完成
-func buildQuery(inStr string) (database.Stuff, error) {
-	res := database.Stuff{}
+func buildQuery(inStr string) (data.Stuff, error) {
+	res := data.Stuff{}
 
-	qNameStr, ok := common.QueryQNameMapStuff[inStr]
+	qNameStr, ok := const_val.QueryQNameMapStuff[inStr]
 	if ok {
 		res.QName = qNameStr
 	}
 
-	nameStr, ok := common.QueryNameMapStuff[inStr]
+	nameStr, ok := const_val.QueryNameMapStuff[inStr]
 	if ok {
 		res.Name = nameStr
 	}
@@ -57,7 +57,7 @@ func buildQuery(inStr string) (database.Stuff, error) {
 func BuildStuffByStr(stuffArr []string) error {
 	ctx := context.Background()
 
-	stuffs := make([]database.Stuff, len(stuffArr))
+	stuffs := make([]data.Stuff, len(stuffArr))
 
 	// 读取本地文件增加到本次处理商品信息中 PS: 初始化时使用
 	//tempStuffs, err := excel.ReadCSVFromStuffData()
@@ -76,7 +76,7 @@ func BuildStuffByStr(stuffArr []string) error {
 		}
 
 		// 整理价格字段
-		temp.ValMH, temp.ValRM = buildVal(temp.ValMH, temp.ValRM)
+		temp.ValMH, temp.ValRM = utils.BuildVal(temp.ValMH, temp.ValRM)
 
 		stuffs = append(stuffs, temp)
 	}
@@ -92,7 +92,7 @@ func BuildStuffByStr(stuffArr []string) error {
 }
 
 // 将字符串转换为对象
-func str2Stuff(stuf string) (database.Stuff, error) {
+func str2Stuff(stuf string) (data.Stuff, error) {
 
 	var (
 		err    error
@@ -102,50 +102,50 @@ func str2Stuff(stuf string) (database.Stuff, error) {
 		vRM    float32
 		order  int
 		region int
-		empty  database.Stuff
+		empty  data.Stuff
 	)
 
 	splits := strings.Split(stuf, ",")
 
 	// 必填字段  没有则报错
-	qName, err = utils2.ArrGetWithCheck(splits, 0)
+	qName, err = utils.ArrGetWithCheck(splits, 0)
 	if err != nil {
 		return empty, err
 	}
 
 	// 必填字段  没有则报错
-	name, err = utils2.ArrGetWithCheck(splits, 1)
+	name, err = utils.ArrGetWithCheck(splits, 1)
 	if err != nil {
 		return empty, err
 	}
 
 	// 非必填字段
-	vMHStr, _ := utils2.ArrGetWithCheck(splits, 2)
-	vMH, err = database.ConvertStr2Float32(vMHStr)
+	vMHStr, _ := utils.ArrGetWithCheck(splits, 2)
+	vMH, err = data.ConvertStr2Float32(vMHStr)
 	if err != nil {
 		return empty, err
 	}
 
 	// 非必填字段
-	vRMStr, _ := utils2.ArrGetWithCheck(splits, 3)
-	vRM, err = database.ConvertStr2Float32(vRMStr)
+	vRMStr, _ := utils.ArrGetWithCheck(splits, 3)
+	vRM, err = data.ConvertStr2Float32(vRMStr)
 	if err != nil {
 		return empty, err
 	}
 
-	orderStr, _ := utils2.ArrGetWithCheck(splits, 4)
-	order, err = database.ConvertStr2Int(orderStr)
+	orderStr, _ := utils.ArrGetWithCheck(splits, 4)
+	order, err = data.ConvertStr2Int(orderStr)
 	if err != nil {
 		return empty, err
 	}
 
-	regionStr, _ := utils2.ArrGetWithCheck(splits, 5)
-	region, err = database.ConvertStr2Int(regionStr)
+	regionStr, _ := utils.ArrGetWithCheck(splits, 5)
+	region, err = data.ConvertStr2Int(regionStr)
 	if err != nil {
 		return empty, err
 	}
 
-	temp := database.Stuff{
+	temp := data.Stuff{
 		QName:    qName,
 		Name:     name,
 		ValMH:    vMH,
@@ -158,7 +158,7 @@ func str2Stuff(stuf string) (database.Stuff, error) {
 }
 
 // 填充对象内容 -- 使用通用逻辑该函数暂存
-func buildStuffVal(s database.Stuff) (database.Stuff, error) {
+func buildStuffVal(s data.Stuff) (data.Stuff, error) {
 
 	if (s.ValMH == 0 && s.ValRM == 0) || (s.ValMH != 0 && s.ValRM != 0) {
 		// log 无需转换
@@ -166,7 +166,7 @@ func buildStuffVal(s database.Stuff) (database.Stuff, error) {
 	}
 
 	if s.ValMH == 0 {
-		valMH, err := utils2.RM2MH(s.ValRM)
+		valMH, err := utils.RM2MH(s.ValRM)
 		if err != nil {
 			// TODO log
 			fmt.Printf("RM2MH[ValRM: %f] err: %v\n", s.ValRM, err)
@@ -176,7 +176,7 @@ func buildStuffVal(s database.Stuff) (database.Stuff, error) {
 	}
 
 	if s.ValRM == 0 {
-		valRM, err := utils2.MH2RM(s.ValMH)
+		valRM, err := utils.MH2RM(s.ValMH)
 		if err != nil {
 			// TODO log
 			fmt.Printf("MH2RM[ValMH: %f] err: %v\n", s.ValMH, err)
@@ -189,7 +189,7 @@ func buildStuffVal(s database.Stuff) (database.Stuff, error) {
 }
 
 // 存储Stuff信息，根据Name判断是否已经存放，该段为全库表唯一
-func saveStuffs(ctx context.Context, list []database.Stuff) error {
+func saveStuffs(ctx context.Context, list []data.Stuff) error {
 
 	for _, s := range list {
 		isExist, id, err := s.ExistByQName(ctx)

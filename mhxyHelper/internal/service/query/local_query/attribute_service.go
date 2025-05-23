@@ -1,20 +1,20 @@
-package service
+package local_query
 
 import (
 	"context"
 	"fmt"
-	"mhxyHelper/internal/database"
-	"mhxyHelper/internal/utils"
-	"mhxyHelper/pkg/common"
+	"mhxyHelper/internal/data"
+	"mhxyHelper/internal/data/const_val"
 	"mhxyHelper/pkg/logger"
+	"mhxyHelper/pkg/utils"
 	"strings"
 )
 
 // 查询属性信息
-func QueryAttribute(inStr string) (int64, []database.Attribute, error) {
+func QueryAttribute(inStr string) (int64, []data.Attribute, error) {
 	var (
 		ctx    = context.Background()
-		qAttr  database.Attribute
+		qAttr  data.Attribute
 		err    error
 		offset int
 		limit  = 50
@@ -31,15 +31,15 @@ func QueryAttribute(inStr string) (int64, []database.Attribute, error) {
 }
 
 // 根据输入字符串构建更为精准的查询条件  数据量不大该过程可以通过map映射完成
-func buildQueryAttr(inStr string) (database.Attribute, error) {
-	res := database.Attribute{}
+func buildQueryAttr(inStr string) (data.Attribute, error) {
+	res := data.Attribute{}
 
-	qNameStr, ok := common.QueryQNameMapAttribute[inStr]
+	qNameStr, ok := const_val.QueryQNameMapAttribute[inStr]
 	if ok {
 		res.QName = qNameStr
 	}
 
-	nameStr, ok := common.QueryNameMapAttribute[inStr]
+	nameStr, ok := const_val.QueryNameMapAttribute[inStr]
 	if ok {
 		res.Name = nameStr
 	}
@@ -56,14 +56,14 @@ func buildQueryAttr(inStr string) (database.Attribute, error) {
 func BuildAttributeByStr(attributeArr []string) error {
 	ctx := context.Background()
 
-	attributes := make([]database.Attribute, len(attributeArr))
+	attributes := make([]data.Attribute, len(attributeArr))
 
 	// 读取本地文件增加到本次处理商品信息中
 	var (
 		tempAttrs [][]string
 		err       error
 	)
-	tempAttrs, err = ReadAttributeFromExcel(ctx)
+	tempAttrs, err = utils.ReadAttributeFromExcel(ctx)
 	if err != nil {
 		logger.Log.ErrorContext(ctx, "BuildAttributeByStr-ReadAttributeFromExcel err: %v\n", err)
 		return err
@@ -96,7 +96,7 @@ func BuildAttributeByStr(attributeArr []string) error {
 }
 
 // 将字符串转换为对象
-func str2Attribute(attrArr []string) (database.Attribute, error) {
+func str2Attribute(attrArr []string) (data.Attribute, error) {
 
 	var (
 		err    error
@@ -105,7 +105,7 @@ func str2Attribute(attrArr []string) (database.Attribute, error) {
 		maxStr string
 		desc   string
 		order  int
-		empty  database.Attribute
+		empty  data.Attribute
 	)
 
 	// 必填字段  没有则报错
@@ -133,12 +133,12 @@ func str2Attribute(attrArr []string) (database.Attribute, error) {
 	}
 
 	orderStr, _ := utils.ArrGetWithCheck(attrArr, 5)
-	order, err = database.ConvertStr2Int(orderStr)
+	order, err = data.ConvertStr2Int(orderStr)
 	if err != nil {
 		return empty, err
 	}
 
-	temp := database.Attribute{
+	temp := data.Attribute{
 		QName: qName,
 		Name:  name,
 		Max:   maxStr,
@@ -150,7 +150,7 @@ func str2Attribute(attrArr []string) (database.Attribute, error) {
 }
 
 // 存储Stuff信息，根据Name判断是否已经存放，该段为全库表唯一
-func saveAttributes(ctx context.Context, list []database.Attribute) error {
+func saveAttributes(ctx context.Context, list []data.Attribute) error {
 
 	for _, s := range list {
 		isExist, id, err := s.ExistByQName(ctx)

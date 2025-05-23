@@ -1,10 +1,11 @@
-package database
+package data
 
 import (
 	"context"
 	"fmt"
 	"gorm.io/gorm"
-	"mhxyHelper/internal/utils"
+	"mhxyHelper/pkg/database"
+	"mhxyHelper/pkg/utils"
 )
 
 // 物品属性信息 范围属性的物品 全服一致的属性 如：装备、灵饰等
@@ -54,7 +55,7 @@ func (at Attribute) ExistByQName(ctx context.Context) (bool, uint, error) {
 // 查询单个物品属性信息  name字段为全表唯一索引
 func (at Attribute) FindByName(ctx context.Context) (Attribute, error) {
 	res := Attribute{}
-	if err := LocalDB().
+	if err := database.LocalDB().
 		WithContext(ctx).
 		Model(Attribute{}).
 		Where("name = ?", at.Name).
@@ -70,7 +71,7 @@ func (at Attribute) FindByName(ctx context.Context) (Attribute, error) {
 
 // 创建物品属性信息
 func (at Attribute) Create(ctx context.Context) (uint, error) {
-	if err := LocalDB().
+	if err := database.LocalDB().
 		WithContext(ctx).
 		Create(&at).Error; err != nil {
 		return 0, fmt.Errorf("create attribute info err: %v", err)
@@ -91,7 +92,7 @@ func (at Attribute) Update(ctx context.Context) (uint, error) {
 		updateMap["desc"] = at.Desc
 	}
 
-	if err := LocalDB().WithContext(ctx).
+	if err := database.LocalDB().WithContext(ctx).
 		Model(Attribute{}).
 		Where("id = ?", at.ID).
 		Error; err != nil {
@@ -102,7 +103,7 @@ func (at Attribute) Update(ctx context.Context) (uint, error) {
 
 // 获取列表 目前仅提供通过名称查询
 func (at Attribute) List(ctx context.Context, offset, limit int) (int64, []Attribute, error) {
-	DB := LocalDB()
+	DB := database.LocalDB()
 	vals := make([]Attribute, 0)
 	var total int64
 	DB = DB.WithContext(ctx).

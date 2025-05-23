@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"mhxyHelper/internal/app"
-	"mhxyHelper/internal/service"
+	"mhxyHelper/internal/service/query/local_query"
 	"mhxyHelper/pkg/errcode"
 	"net/http"
 )
@@ -30,7 +30,7 @@ func BuildStuff(c *gin.Context) {
 		return
 	}
 
-	err = service.BuildStuffByStr(req.StuffStrArr)
+	err = local_query.BuildStuffByStr(req.StuffStrArr)
 	if err != nil {
 		response.ToErrorResponse(errcode.ErrorBuildStuffByStrFail.WithDetails(err.Error()))
 		// c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -57,7 +57,7 @@ func QueryStuff(c *gin.Context) {
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(err.Error()))
 		return
 	}
-	total, stuffs, err := service.QueryStuff(req.QueryStr)
+	total, stuffs, err := local_query.QueryStuff(req.QueryStr)
 	if err != nil {
 		response.ToErrorResponse(errcode.ErrorQueryStuffFail.WithDetails(err.Error()))
 		return

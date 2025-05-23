@@ -1,11 +1,10 @@
-package service
+package utils
 
 import (
 	"fmt"
-	"mhxyHelper/internal/utils"
 )
 
-func buildVal(valMH, valRM float32) (float32, float32) {
+func BuildVal(valMH, valRM float32) (float32, float32) {
 	var err error
 	if (valMH == 0 && valRM == 0) || (valMH != 0 && valRM != 0) {
 		// log 无需转换
@@ -13,7 +12,7 @@ func buildVal(valMH, valRM float32) (float32, float32) {
 	}
 
 	if valMH == 0 {
-		valMH, err = utils.RM2MH(valRM)
+		valMH, err = RM2MH(valRM)
 		if err != nil {
 			// TODO log
 			fmt.Printf("RM2MH[ValRM: %f] err: %v\n", valRM, err)
@@ -22,7 +21,7 @@ func buildVal(valMH, valRM float32) (float32, float32) {
 	}
 
 	if valRM == 0 {
-		valRM, err = utils.MH2RM(valMH)
+		valRM, err = MH2RM(valMH)
 		if err != nil {
 			// TODO log
 			fmt.Printf("MH2RM[ValMH: %f] err: %v\n", valMH, err)

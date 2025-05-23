@@ -1,9 +1,10 @@
-package database
+package data
 
 import (
 	"context"
 	"fmt"
 	"gorm.io/gorm"
+	"mhxyHelper/pkg/database"
 )
 
 // 账单
@@ -22,7 +23,7 @@ type Account struct {
 // 查询该用户单个物品信息  name + userId 字段为查询组合   一个用户可以买多个
 func (ac Account) FindUserAccountInfo(ctx context.Context) (Account, error) {
 	res := Account{}
-	if err := LocalDB().
+	if err := database.LocalDB().
 		WithContext(ctx).
 		Model(Account{}).
 		Where("user_id = ? AND stuff_name = ?", ac.UserId, ac.StuffName).
@@ -38,7 +39,7 @@ func (ac Account) FindUserAccountInfo(ctx context.Context) (Account, error) {
 
 // 创建账单信息
 func (ac Account) Create(ctx context.Context) (uint, error) {
-	if err := LocalDB().
+	if err := database.LocalDB().
 		WithContext(ctx).
 		Create(&ac).Error; err != nil {
 		return 0, fmt.Errorf("create account info err: %v", err)
@@ -67,7 +68,7 @@ func (ac Account) Update(ctx context.Context) (uint, error) {
 		updateMap["sell_val_rm"] = ac.SellValRM
 	}
 
-	if err := LocalDB().WithContext(ctx).
+	if err := database.LocalDB().WithContext(ctx).
 		Model(Account{}).
 		Where("id = ?", ac.ID).
 		Error; err != nil {
@@ -78,7 +79,7 @@ func (ac Account) Update(ctx context.Context) (uint, error) {
 
 // 获取账单列表 目前仅提供通过用户和物品名称
 func (ac Account) List(ctx context.Context, offset, limit int) (int64, []Account, error) {
-	DB := LocalDB()
+	DB := database.LocalDB()
 	vals := make([]Account, 0)
 
 	var total int64

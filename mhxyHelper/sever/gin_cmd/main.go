@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"mhxyHelper/internal/database"
 	"mhxyHelper/internal/handler"
+	"mhxyHelper/pkg/database"
 	"mhxyHelper/pkg/logger"
 )
 
