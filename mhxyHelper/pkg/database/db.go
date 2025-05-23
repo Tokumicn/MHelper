@@ -48,7 +48,7 @@ func InitDB() (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(time.Minute * 30)
 
 	// TODO 开启SQL打印测试用
-	db = db.Debug()
+	// db = db.Debug()
 
 	_db = db
 

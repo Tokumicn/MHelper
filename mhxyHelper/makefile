@@ -26,9 +26,13 @@ build_linux:
 .PHONY: build_win
 # build_win
 build_win: # CGO_ENABLED=0
-	GOOS=windows GOARCH=amd64
+	GOOS=windows GOARCH=amd64 go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_cmd ./sever/cmd/main.go
 	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_web.exe ./sever/gin_cmd/main.go
-	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_cmd.exe ./sever/cmd/main.go
+
+
+
+
+
 
 .PHONY: docker_build
 # docker_build

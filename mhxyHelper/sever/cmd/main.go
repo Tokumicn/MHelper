@@ -50,7 +50,7 @@ func main() {
 	//}
 
 	// 默认走本地查询
-	processFlag := processLOCAL
+	processFlag := processMHJL
 	for {
 		fmt.Println("帮助信息 [<命令: 直接输入问题 | Q | quit >:<空格> <问题>] [eg: Q: 160武器]") // <命令: Q LLM RAG quit>
 		fmt.Print("输入查询关键词: ")
@@ -135,7 +135,7 @@ func buildInput() (string, string) {
 func checkUserInput(cmdStr string) string {
 
 	if len(cmdStr) <= 0 {
-		return processLOCAL
+		return processMHJL
 	}
 
 	cmdStr = strings.ToLower(cmdStr)
