@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"mhxyHelper/internal/data"
 	"mhxyHelper/internal/service"
+	"mhxyHelper/internal/service/buildQA"
 	"mhxyHelper/internal/service/query/mhjl_query"
 	"mhxyHelper/pkg/database"
 	"mhxyHelper/pkg/logger"
@@ -15,12 +16,13 @@ import (
 )
 
 const (
-	processLOCAL = "local" // 查询本地数据库 默认值
-	processMHJL  = "mhjl"  // 梦幻精灵
-	processRAG   = "rag"   // 问知识库
-	processLLM   = "llm"   // 问大模型
-	processExit  = "exit"  // 退出
-	processCLEAR = "clear"
+	processLOCAL      = "local" // 查询本地数据库 默认值
+	processMHJL       = "mhjl"  // 梦幻精灵
+	processRAG        = "rag"   // 问知识库
+	processLLM        = "llm"   // 问大模型
+	processExit       = "exit"  // 退出
+	processCLEAR      = "clear"
+	processOCRBuilder = "ocr_builder" // OCR更新物品数据
 )
 
 func main() {
@@ -70,6 +72,11 @@ func main() {
 
 		if processFlag == processCLEAR {
 			utils.ClearScreen()
+			continue
+		}
+
+		if processFlag == processOCRBuilder {
+			buildQA.BuildFromOCR()
 			continue
 		}
 
@@ -170,6 +177,11 @@ func checkUserInput(cmdStr string) string {
 	// 问大模型
 	if hasPrefix4Map(cmdStr, []string{"llm", "llm:", "llm: "}) {
 		return processLLM
+	}
+
+	// OCR 构建商品信息
+	if hasPrefix4Map(cmdStr, []string{"ocr", "ocr:", "ocr: "}) {
+		return processOCRBuilder
 	}
 
 	return processMHJL
