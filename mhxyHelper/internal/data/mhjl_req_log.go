@@ -44,7 +44,7 @@ func (at MHJLResponseLog) existQuery(ctx context.Context) (*MHJLResponseLog, err
 	if err := database.LocalDB().
 		WithContext(ctx).
 		Model(MHJLResponseLog{}).
-		Where("query_md5 = ?", at.QueryMd5).
+		Find("query_md5 = ?", at.QueryMd5).
 		First(res).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -63,7 +63,7 @@ func (at MHJLResponseLog) existRawAnswer(ctx context.Context) (*MHJLResponseLog,
 		WithContext(ctx).
 		Model(MHJLResponseLog{}).
 		Where("raw_answer_md5 = ?", at.RawAnswerMd5).
-		First(res).Error; err != nil {
+		Find(res).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		} else {

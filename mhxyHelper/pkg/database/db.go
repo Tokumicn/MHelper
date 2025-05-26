@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"os"
 	"path/filepath"
 	"time"
@@ -29,6 +30,8 @@ func InitDB() (*gorm.DB, error) {
 		//DSN: "mode=wal",
 		//// 增加最大连接数为 100
 		//MaxOpenConns: 100,
+		//Logger: logger.Default.LogMode(logger.Info).IgnoreRecordNotFoundError(true),
+		Logger: logger.Default.LogMode(logger.Error),
 	})
 	if err != nil {
 		return nil, err
