@@ -9,6 +9,7 @@ import (
 	"mhxyHelper/internal/service/query/mhjl_query"
 	"mhxyHelper/pkg/database"
 	"mhxyHelper/pkg/logger"
+	"mhxyHelper/pkg/utils"
 	"os"
 	"strings"
 )
@@ -19,6 +20,7 @@ const (
 	processRAG   = "rag"   // 问知识库
 	processLLM   = "llm"   // 问大模型
 	processExit  = "exit"  // 退出
+	processCLEAR = "clear"
 )
 
 func main() {
@@ -66,28 +68,33 @@ func main() {
 			break
 		}
 
-		total, typeStr, data, err := processAnswer(ctx, processFlag, inputStr)
+		if processFlag == processCLEAR {
+			utils.ClearScreen()
+			continue
+		}
+
+		total, typeStr, answerData, err := processAnswer(ctx, processFlag, inputStr)
 		if err != nil {
 			fmt.Println("err: ", err.Error())
 			continue
 		}
 
-		printQueryResult(total, typeStr, data)
+		printQueryResult(total, typeStr, answerData)
 	}
 
 }
 
 func processAnswer(ctx context.Context, processFlag string, inputStr string) (int64, string, interface{}, error) {
 	var (
-		err     error
-		total   int64
-		typeStr string
-		data    interface{}
+		err        error
+		total      int64
+		typeStr    string
+		answerData interface{}
 	)
 
 	switch processFlag {
 	case processLOCAL:
-		total, typeStr, data, err = service.QueryLocal(inputStr)
+		total, typeStr, answerData, err = service.QueryLocal(inputStr)
 		if err != nil {
 			fmt.Println("err: ", err.Error())
 			return 0, "", "", err
@@ -95,7 +102,7 @@ func processAnswer(ctx context.Context, processFlag string, inputStr string) (in
 	case processMHJL:
 		total = 0
 		typeStr = service.TypeMHJL
-		data, err = mhjl_query.QueryMHJL(ctx, inputStr)
+		answerData, err = mhjl_query.QueryMHJL(ctx, inputStr)
 		if err != nil {
 			fmt.Println("err: ", err.Error())
 			return 0, "", "", err
@@ -104,7 +111,7 @@ func processAnswer(ctx context.Context, processFlag string, inputStr string) (in
 		fmt.Println("processFlag: ", processFlag)
 		fmt.Println("暂未实现.")
 	}
-	return total, typeStr, data, nil
+	return total, typeStr, answerData, nil
 }
 
 // 构建输入
@@ -140,6 +147,10 @@ func checkUserInput(cmdStr string) string {
 	}
 
 	cmdStr = strings.ToLower(cmdStr)
+
+	if cmdStr == "clear" {
+		return processCLEAR
+	}
 
 	// 退出
 	if cmdStr == "quit" || cmdStr == "exit" {
@@ -212,7 +223,10 @@ func DictBuildToolV1() {
 	data.InitCutSets()
 
 	// 备份dict.txt
-	data.DictBackup()
+	err := data.DictBackup()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// 接收多行输入  回车结束
 	inputArr := scanInputText()
