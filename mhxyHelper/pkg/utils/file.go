@@ -48,3 +48,22 @@ func ConvRelative2FullPath(relativePath, fileName string) string {
 	// 获取完整文件路径
 	return filepath.Join(fullDirPath, fileName)
 }
+
+func WriteLinesToFile(lines []string, filename string) error {
+	// 创建或打开文件
+	file, err := os.Create(filename)
+	if err != nil {
+		return fmt.Errorf("创建文件失败: %v", err)
+	}
+	defer file.Close() // 确保关闭文件
+
+	// 遍历字符串数组，逐行写入
+	for _, line := range lines {
+		// 使用 `fmt.Fprintln` 写入行并自动添加换行符
+		_, err := fmt.Fprintln(file, line)
+		if err != nil {
+			return fmt.Errorf("写入文件失败: %v", err)
+		}
+	}
+	return nil
+}

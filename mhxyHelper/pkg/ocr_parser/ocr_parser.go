@@ -2,10 +2,11 @@ package ocr_parser
 
 import (
 	"sort"
+	"strings"
 )
 
 // 分组参数配置
-const (
+var (
 	//yThreshold = 15 // 垂直方向分组阈值
 	//xThreshold = 50 // 水平方向合并阈值
 
@@ -13,13 +14,18 @@ const (
 	xThreshold = 400 // 水平方向合并阈值 // TODO: 最重要的调节参数，考虑如何自动计算这个参数
 )
 
+func SetThresholds(y, x int) {
+	yThreshold = y
+	xThreshold = x
+}
+
 // 表格单元格结构体
 type TableCell struct {
 	Text     string  // 单元格文本
 	Position [][]int // 位置坐标
 }
 
-// 主解析函数
+// ParseOCRToTable 解析OCR结果为表格
 func ParseOCRToTable(results []OCRResult) ([][]TableCell, error) {
 
 	// 步骤1: 按Y坐标分组
@@ -38,6 +44,29 @@ func ParseOCRToTable(results []OCRResult) ([][]TableCell, error) {
 	}
 
 	return table, nil
+}
+
+// ParseOCRToTableWithFilter 解析OCR结果为表格，支持过滤文本
+func ParseOCRToTableWithFilter(results []OCRResult, ignoreTextMap map[string]struct{}, prefixIgnore []string) ([][]TableCell, error) {
+	// 过滤掉无用信息
+	results = filter4Result(results, ignoreTextMap, prefixIgnore)
+	return ParseOCRToTable(results)
+}
+
+func filter4Result(results []OCRResult, ignoreTextMap map[string]struct{}, prefixIgnore []string) []OCRResult {
+	res := make([]OCRResult, 0)
+	for _, result := range results {
+		if _, ok := ignoreTextMap[result.Text]; ok {
+			continue
+		}
+
+		for _, prefix := range prefixIgnore {
+			if !strings.HasPrefix(result.Text, prefix) {
+				res = append(res, result)
+			}
+		}
+	}
+	return res
 }
 
 // 按Y坐标分组函数

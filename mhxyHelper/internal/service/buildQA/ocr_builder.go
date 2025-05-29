@@ -5,17 +5,24 @@ import (
 	"fmt"
 	"log/slog"
 	"mhxyHelper/pkg/ocr_parser"
+	strings_pipeline "mhxyHelper/pkg/string_pipeline"
 	"mhxyHelper/pkg/utils"
 	"os"
-)
-
-const (
-	imageDir = "./images"
 )
 
 func BuildFromOCR() {
 	//dir, _ := os.Getwd()
 	//fmt.Println("[My-OCR] shell work dir: ", dir)
+
+	var (
+		file       *os.File
+		err        error
+		dirEntries []os.DirEntry
+		ocrRes     []ocr_parser.OCRResult
+		table      [][]ocr_parser.TableCell
+	)
+
+	ctx := context.TODO()
 
 	//exePath, err := os.Executable()
 	//if err != nil {
@@ -24,18 +31,11 @@ func BuildFromOCR() {
 	//binDir := filepath.Dir(exePath)
 	//
 	//fmt.Println("[My-OCR] bin work dir: ", binDir)
-	//dirPath := fmt.Sprintf("%s/images/", binDir)
-	// 读取文件
+	//dirPath := fmt.Sprintf("%s/ocr_images/", binDir)
 
-	var (
-		ctx        = context.TODO()
-		file       *os.File
-		err        error
-		dirEntries []os.DirEntry
-		ocrRes     []ocr_parser.OCRResult
-		table      [][]ocr_parser.TableCell
-	)
+	ocr_parser.SetThresholds(50, 40) // 提取到配置中
 
+	imageDir := "./ocr_images/"
 	dirEntries, err = os.ReadDir(imageDir)
 	if err != nil {
 		slog.ErrorContext(ctx, "read dir err: ", err.Error())
@@ -43,6 +43,8 @@ func BuildFromOCR() {
 	}
 
 	for _, entry := range dirEntries {
+		// 最终待写入文件结果
+		var writeArr []string
 
 		// 文件夹跳过不处理
 		if entry.IsDir() {
@@ -72,28 +74,67 @@ func BuildFromOCR() {
 			return
 		}
 
+		//ocrResBytes, err := json.Marshal(ocrRes)
+		//if err != nil {
+		//	slog.ErrorContext(ctx, "json marshal err: ", err.Error())
+		//}
+
+		//fmt.Println("===================================================")
+		//fmt.Println(string(ocrResBytes))
+		//fmt.Println("================================================")
+
+		//err = json.Unmarshal([]byte(rawJson), &ocrRes)
+		//if err != nil {
+		//	slog.ErrorContext(ctx, "json unmarshal err: ", err.Error())
+		//	return
+		//}
+
 		// 解析OCR结果
-		table, err = ocr_parser.ParseOCRToTable(ocrRes)
+		table, err = ocr_parser.ParseOCRToTableWithFilter(ocrRes, map[string]struct{}{
+			"单价": {},
+		}, []string{"等级"})
+
+		//fmt.Println("===================================================")
+		//ocr_parser.PrintOCRTable(table)
+		//fmt.Println("===================================================")
+		// 将结果映射到实体
+
+		for _, row := range table {
+			for _, cell := range row {
+				writeArr = append(writeArr, cell.Text)
+			}
+		}
+
+		// 输出实体
+		err = utils.WriteLinesToFile(writeArr, "output.txt")
 		if err != nil {
-			slog.ErrorContext(ctx, "parse ocr err: ", err.Error())
+			slog.ErrorContext(ctx, "write file err: ", err.Error())
 			return
 		}
 
-		ocr_parser.PrintOCRTable(table)
-		fmt.Println("===================================================")
-		fmt.Println("===================================================")
-		fmt.Println("===================================================")
+		// 初始化流水线
+		pipeline := &strings_pipeline.Pipeline{}
+		pipeline.AddStep(strings_pipeline.Deduplicate)
+		pipeline.AddStep(strings_pipeline.NormalizeNames)
 
-		// TODO 将结果映射到实体
+		// 解析输入数据
+		items := strings_pipeline.ParseInput(writeArr)
 
-		// TODO 输出实体
+		// 运行流水线处理
+		result := pipeline.Run(items)
+
+		// 输出结果
+		for _, product := range result {
+			fmt.Printf("{ Name: %q, Prices: %v }\n", product.Name, product.Prices)
+		}
 	}
 
+	// 关闭文件
 	if file != nil {
 		err = file.Close()
 		if err != nil {
 			slog.ErrorContext(ctx, "close file err: ", err.Error())
+			return
 		}
 	}
-
 }

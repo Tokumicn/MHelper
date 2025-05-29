@@ -2,7 +2,8 @@ package ocr_parser
 
 import "sort"
 
-// 自动计算阈值策略
+// 自动计算阈值策略 未完成
+// 需要思考如何控制这个参数比较有效 ，目前是通过测试查看结果数据是否分组正确来决定的，对于图片尺寸一致的场景问题不大
 func CalculateThresholds(results []OCRResult) (yThreshold, xThreshold int) {
 	// 先按Y坐标排序所有结果
 	sort.Slice(results, func(i, j int) bool {

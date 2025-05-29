@@ -32,7 +32,7 @@ func PostOCR(ctx context.Context, fileName string, file *os.File) ([]OCRResult, 
 }
 
 func ocrCall(ctx context.Context, fileName string, file *os.File) ([]byte, error) {
-	url := "http://0.0.0.0:8501/ocr"
+	url := "http://0.0.0.0:8501/ocr" // TODO: 提取配置
 	method := http.MethodPost
 
 	// 2. 准备请求体
