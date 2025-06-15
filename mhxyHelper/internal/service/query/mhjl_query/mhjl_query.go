@@ -140,6 +140,7 @@ func extractFormattingText(ctx context.Context, html string) string {
 	// 获取可视区域文本（自动处理 CSS 样式）
 	element := page.MustElement("body")
 	text := element.MustText()
-	slog.InfoContext(ctx, "build html success. html2text: ", text)
+	msg := fmt.Sprintf("build html success. html2text: %s", text)
+	slog.DebugContext(ctx, msg)
 	return text
 }

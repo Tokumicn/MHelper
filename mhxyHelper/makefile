@@ -1,9 +1,9 @@
 .PHONY: copy_db
 # copy_db
-copy_db:
-	cp mhxyhelper.db ./bin
-	cp mhxyhelper.db-shm ./bin
-	cp mhxyhelper.db-wal ./bin
+#copy_db:
+#	cp mhxyhelper.db ./bin
+#	cp mhxyhelper.db-shm ./bin
+#	cp mhxyhelper.db-wal ./bin
 
 .PHONY: build
 # build
@@ -12,9 +12,6 @@ build:
 	mkdir -p bin/
 	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_web ./sever/gin_cmd/main.go
 	go build -ldflags "-X main.Version=v0.1" -o ./bin/mhxy_cmd ./sever/cmd/main.go
-	cp ./mhxyhelper.db ./bin
-	cp ./mhxyhelper.db-shm ./bin
-	cp ./mhxyhelper.db-wal ./bin
 
 .PHONY: build_linux
 # build_linux
